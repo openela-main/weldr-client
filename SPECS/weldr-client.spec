@@ -6,7 +6,7 @@
 %global goipath         github.com/osbuild/weldr-client/v2
 
 Name:      weldr-client
-Version:   35.9
+Version:   35.12
 Release:   2%{?dist}
 # Upstream license specification: Apache-2.0
 License:   ASL 2.0
@@ -130,6 +130,38 @@ composer-cli package.
 
 
 %changelog
+* Wed Feb 21 2024 Brian C. Lane <bcl@redhat.com> - 35.12-2
+- Add centos 8 repos for testing
+  Related: RHEL-1770
+
+* Wed Feb 21 2024 Brian C. Lane <bcl@redhat.com> - 35.12-1
+- Copy rhel-8.10.json test repository from osbuild-composer
+- New release: 35.12 (bcl)
+  Resolves: RHEL-1770
+- Add support for compose start warning messages (bcl)
+- Update documentation urls for new locations (bcl)
+- weldr: go fmt changes to a couple comments (bcl)
+- weldr: Update ostree test for parentid with no url (bcl)
+- Makefile: Turn off seccomp for build-in-podman (bcl)
+- composer-cli: Update doc links (simon.steinbeiss)
+- docs: fix typo/formatting in HACKING.md (idiez)
+- Add release creation documentation (bcl)
+- spec: Require createrepo_c for weldr-client-tests package (bcl)
+- spec: migrate the license field to SPDX (ondrej)
+- Go: Switch to go 1.19 (bcl)
+- CI: Update terraform hash (bcl)
+- Actions: add workflow for marking and closing stale issues and PRs (thozza)
+- workflows: Stop using golint (bcl)
+- workflows: Add Go 1.21 and 1.22 to test matrix (bcl)
+- workflows: Update to golangci-lint 1.56.2 (bcl)
+- workflow: Ignore govulncheck failures (bcl)
+- workflow: Switch to testing on go 1.18, 1.19, 1.20 (bcl)
+- build(deps): bump actions/setup-go from 3 to 5 (49699333+dependabot[bot])
+- build(deps): bump github.com/spf13/cobra from 1.6.1 to 1.8.0 (49699333+dependabot[bot])
+- build(deps): bump actions/checkout from 3 to 4 (49699333+dependabot[bot])
+- build(deps): bump github.com/BurntSushi/toml from 1.2.1 to 1.3.2 (49699333+dependabot[bot])
+- build(deps): bump github.com/stretchr/testify from 1.8.1 to 1.8.4 (49699333+dependabot[bot])
+
 * Tue Feb 14 2023 Brian C. Lane <bcl@redhat.com> - 35.9-2
 - tests: Remove default repos before running tests
   Related: rhbz#2168666
