@@ -1,0 +1,94 @@
+From 6f0786d26752bab291a4841beb6121e3c0d65941 Mon Sep 17 00:00:00 2001
+From: "Brian C. Lane" <bcl@redhat.com>
+Date: Tue, 10 Jun 2025 09:34:42 -0700
+Subject: [PATCH] tests: OSTree does not support the qcow2 image type
+
+Use edge-commit for tests on RHEL 9 and allow deprecation warnings for
+its tests. osbuild-composer removes these warnings after v147 so make
+them optional.
+---
+ weldr/compose_test.go | 39 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
+
+diff --git a/weldr/compose_test.go b/weldr/compose_test.go
+index 31e6892..7f74b31 100644
+--- a/weldr/compose_test.go
++++ b/weldr/compose_test.go
+@@ -17,6 +17,22 @@ import (
+ 	"github.com/stretchr/testify/require"
+ )
+ 
++// JustAWarning returns true if the response has a Status of true and no errors
++// Depending on the version of osbuild-composer being used for the test it
++// may return nil or may return a warning for some operations.
++// eg. user changes to edge-commit images generate a warning until v147 when
++// the decision to deprecate was reversed and they are allowed w/o warning.
++func JustAWarning(r *APIResponse) bool {
++	if r == nil {
++		return true
++	}
++	// No errors allowed, even if Status is true
++	if len(r.Errors) > 0 {
++		return false
++	}
++	return r.Status
++}
++
+ func TestListComposes(t *testing.T) {
+ 	composes, r, err := testState.client.ListComposes()
+ 	require.Nil(t, err)
+@@ -85,7 +101,7 @@ aws_secret_key = "AWS Secret Key"
+ 
+ // parentid with no url should result in an error
+ func TestStartOSTreeParentNoURL(t *testing.T) {
+-	_, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "qcow2", "refid", "parent", "", 0, 2)
++	_, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "edge-commit", "refid", "parent", "", 0, 2)
+ 	require.Nil(t, err)
+ 	require.NotNil(t, r)
+ 	assert.False(t, r.Status)
+@@ -93,17 +109,23 @@ func TestStartOSTreeParentNoURL(t *testing.T) {
+ }
+ 
+ func TestStartOSTreeComposeUrl(t *testing.T) {
+-	id, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "qcow2", "refid", "", "http://weldr.io", 0, 2)
++	id, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "edge-commit", "refid", "", "http://weldr.io", 0, 2)
+ 	require.Nil(t, err)
+-	require.Nil(t, r)
++	if r != nil {
++		// Check for a warning, not an error
++		assert.True(t, JustAWarning(r))
++	}
+ 	assert.Greater(t, len(id), 0)
+ }
+ 
+ func TestStartOSTreeParentAndUrl(t *testing.T) {
+ 	// Sending both the parent url and the parent id is now allowed
+-	id, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "qcow2", "refid", "parent", "http://weldr.io", 0, 2)
++	id, r, err := testState.client.StartOSTreeComposeTest("cli-test-bp-1", "edge-commit", "refid", "parent", "http://weldr.io", 0, 2)
+ 	require.Nil(t, err)
+-	require.Nil(t, r)
++	if r != nil {
++		// Check for a warning, not an error
++		assert.True(t, JustAWarning(r))
++	}
+ 	assert.Greater(t, len(id), 0)
+ }
+ 
+@@ -122,9 +144,12 @@ aws_secret_key = "AWS Secret Key"
+ `))
+ 	require.Nil(t, err)
+ 
+-	id, r, err := testState.client.StartOSTreeComposeTestUpload("cli-test-bp-1", "qcow2", "test-image", tmpProfile.Name(), "refid", "", "http://weldr.io", 0, 2)
++	id, r, err := testState.client.StartOSTreeComposeTestUpload("cli-test-bp-1", "edge-commit", "test-image", tmpProfile.Name(), "refid", "", "http://weldr.io", 0, 2)
+ 	require.Nil(t, err)
+-	require.Nil(t, r)
++	if r != nil {
++		// Check for a warning, not an error
++		assert.True(t, JustAWarning(r))
++	}
+ 	assert.Greater(t, len(id), 0)
+ }
+ 
+-- 
+2.49.0
+

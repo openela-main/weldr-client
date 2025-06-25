@@ -7,7 +7,7 @@
 
 Name:      weldr-client
 Version:   35.12
-Release:   2%{?dist}
+Release:   4%{?dist}
 # Upstream license specification: Apache-2.0
 License:   Apache-2.0
 Summary:   Command line utility to control osbuild-composer
@@ -19,6 +19,9 @@ Source0:   https://github.com/osbuild/weldr-client/releases/download/v%{version}
 Source1:   https://github.com/osbuild/weldr-client/releases/download/v%{version}/%{name}-%{version}.tar.gz.asc
 Source2:   https://keys.openpgp.org/vks/v1/by-fingerprint/117E8C168EFE3A7F#/gpg-117E8C168EFE3A7F.key
 %endif
+
+# Fix failing tests when running against osbuild-composer v141
+Patch0001: 0001-tests-OSTree-does-not-support-the-qcow2-image-type.patch
 
 Obsoletes: composer-cli < 35.0
 Provides: composer-cli = %{version}-%{release}
@@ -130,6 +133,17 @@ composer-cli package.
 
 
 %changelog
+* Wed Jun 11 2025 Brian C. Lane <bcl@redhat.com> - 35.12-4
+- Bump release for y-stream AND z-stream building using
+  centpkg build --rhel-target=zstream
+  Related: RHEL-89344
+
+* Mon Jun 09 2025 Brian C. Lane <bcl@redhat.com> - 35.12-3
+- tests: OSTree does not support the qcow2 image type
+- Add test repositories for RHEL 9.6 and 9.7
+- Rebuild for CVE-2025-22871
+  Resolves: RHEL-89344
+
 * Wed Feb 21 2024 Brian C. Lane <bcl@redhat.com> - 35.12-2
 - Add centos 9 repos for testing
   Related: RHEL-1035
