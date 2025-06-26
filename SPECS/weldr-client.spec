@@ -7,7 +7,7 @@
 
 Name:      weldr-client
 Version:   35.12
-Release:   2%{?dist}
+Release:   3%{?dist}
 # Upstream license specification: Apache-2.0
 License:   ASL 2.0
 Summary:   Command line utility to control osbuild-composer
@@ -130,6 +130,12 @@ composer-cli package.
 
 
 %changelog
+* Wed Jun 11 2025 Brian C. Lane <bcl@redhat.com> - 35.12-3
+- Update test repository snapshot urls rhel 8.10 and remove cs8 repos
+  The snapshots for cs8 have been removed from the service
+- Rebuild for CVE-2025-22871
+  Resolves: RHEL-89289
+
 * Wed Feb 21 2024 Brian C. Lane <bcl@redhat.com> - 35.12-2
 - Add centos 8 repos for testing
   Related: RHEL-1770
